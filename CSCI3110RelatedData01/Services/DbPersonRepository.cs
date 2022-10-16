@@ -23,13 +23,29 @@ public class DbPersonRepository : IPersonRepository
         int personId, Recommendation recommendation)
     {
         var person = await ReadAsync(personId);
-        if(person != null)
+        if (person != null)
         {
             person.Recommendations.Add(recommendation);
             recommendation.Person = person;
             await _db.SaveChangesAsync();
         }
         return recommendation;
+    }
+
+    public async Task DeleteRecommendationAsync(
+        int personId, int recommendationId)
+    {
+        var person = await ReadAsync(personId);
+        if (person != null)
+        {
+            var recommendation = person.Recommendations
+               .FirstOrDefault(r => r.Id == recommendationId);
+            if (recommendation != null)
+            {
+                person.Recommendations.Remove(recommendation);
+                await _db.SaveChangesAsync();
+            }
+        }
     }
 
     public async Task<ICollection<Person>> ReadAllAsync()

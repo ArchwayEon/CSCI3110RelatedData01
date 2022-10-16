@@ -13,4 +13,6 @@ public interface IPersonRepository
         int personId, Recommendation recommendation);
     Task UpdateRecommendationAsync(
         int personId, Recommendation recommendation);
+    Task DeleteRecommendationAsync(
+        int personId, int recommendationId);
 }

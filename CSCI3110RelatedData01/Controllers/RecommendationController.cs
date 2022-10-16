@@ -36,7 +36,7 @@ public class RecommendationController : Controller
         {
             var recommendation = recommendationVM.GetRecommendationInstance();
             await _personRepo.CreateRecommendationAsync(personId, recommendation);
-            return RedirectToAction("Index", "Person");
+            return RedirectToAction("Details", "Person", new { id = personId });
         }
         recommendationVM.Person = await _personRepo.ReadAsync(personId);
         return View(recommendationVM);
@@ -83,5 +83,36 @@ public class RecommendationController : Controller
         return View(recommendationVM);
     }
 
+    public async Task<IActionResult> Delete(
+        [Bind(Prefix = "id")] int personId, int recId)
+    {
+        var person = await _personRepo.ReadAsync(personId);
+        if (person == null)
+        {
+            return RedirectToAction("Index", "Person");
+        }
+        var recommendation =
+            person.Recommendations.FirstOrDefault(r => r.Id == recId);
+        if (recommendation == null)
+        {
+            return RedirectToAction(
+                "Details", "Person", new { id = personId });
+        }
+        var model = new DeleteRecommendationVM
+        {
+            Person = person,
+            Id = recommendation.Id,
+            Rating = recommendation.Rating,
+            Narrative = recommendation.Narrative
+        };
+        return View(model);
+    }
+
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id, int personId)
+    {
+        await _personRepo.DeleteRecommendationAsync(personId, id);
+        return RedirectToAction("Details", "Person", new { id = personId });
+    }
 
 }
