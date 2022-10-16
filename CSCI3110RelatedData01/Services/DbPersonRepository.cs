@@ -51,4 +51,21 @@ public class DbPersonRepository : IPersonRepository
         }
         return person;
     }
+
+    public async Task UpdateRecommendationAsync(
+        int personId, Recommendation recommendation)
+    {
+        var person = await ReadAsync(personId);
+        if (person != null)
+        {
+            var recommendationToUpdate = person.Recommendations
+                .FirstOrDefault(r => r.Id == recommendation.Id);
+            if (recommendationToUpdate != null)
+            {
+                recommendationToUpdate.Narrative = recommendation.Narrative;
+                recommendationToUpdate.Rating = recommendation.Rating;
+                await _db.SaveChangesAsync();
+            }
+        }
+    }
 }

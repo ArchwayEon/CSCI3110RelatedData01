@@ -42,4 +42,46 @@ public class RecommendationController : Controller
         return View(recommendationVM);
     }
 
+    public async Task<IActionResult> Edit(
+        [Bind(Prefix = "id")] int personId, int recId)
+    {
+        var person = await _personRepo.ReadAsync(personId);
+        if (person == null)
+        {
+            return RedirectToAction("Index", "Person");
+        }
+        var recommendation = 
+            person.Recommendations.FirstOrDefault(r => r.Id == recId);
+        if (recommendation == null)
+        {
+            return RedirectToAction(
+                "Details", "Person", new { id = personId });
+        }
+        var model = new EditRecommendationVM
+        {
+            Person = person,
+            Id = recommendation.Id,
+            Rating = recommendation.Rating,
+            Narrative = recommendation.Narrative
+        };
+        return View(model);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(
+        int personId, EditRecommendationVM recommendationVM)
+    {
+        if (ModelState.IsValid)
+        {
+            var recommendation = 
+                recommendationVM.GetRecommendationInstance();
+            await _personRepo.UpdateRecommendationAsync(
+                personId, recommendation);
+            return RedirectToAction("Details", "Person", new { id = personId });
+        }
+        recommendationVM.Person = await _personRepo.ReadAsync(personId);
+        return View(recommendationVM);
+    }
+
+
 }

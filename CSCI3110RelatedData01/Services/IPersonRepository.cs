@@ -11,4 +11,6 @@ public interface IPersonRepository
 
     Task<Recommendation> CreateRecommendationAsync(
         int personId, Recommendation recommendation);
+    Task UpdateRecommendationAsync(
+        int personId, Recommendation recommendation);
 }
