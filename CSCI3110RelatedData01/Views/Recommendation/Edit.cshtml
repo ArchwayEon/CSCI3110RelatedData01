@@ -14,10 +14,11 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="personId" value="@person.Id" />
             <div class="form-group">
                 <label asp-for="Id" class="control-label"></label>
-                <input Name="personId" value="@person.Id" 
-                    readonly class="form-control" />
+                <input asp-for="Id" value="@Model.Id"
+                       readonly class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="Rating" class="control-label"></label>
